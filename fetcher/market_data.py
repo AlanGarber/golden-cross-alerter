@@ -1,7 +1,7 @@
 import yfinance as yf
 import pandas as pd
 
-def get_historical_data(symbol: str, period: str = "2y") -> pd.DataFrame:
+def get_historical_data(symbol: str, period: str = "5y") -> pd.DataFrame:
     """
     Descarga datos históricos de un símbolo.
     Retorna un DataFrame con columna 'Close'.
