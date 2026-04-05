@@ -17,8 +17,8 @@ def get_company_name(symbol: str) -> str:
 
 def build_caption(symbol: str, cross_type: str, df) -> str:
     price = df["Close"].iloc[-1]
-    ma50 = df["Close"].rolling(window=50).mean().iloc[-1]
-    ma200 = df["Close"].rolling(window=200).mean().iloc[-1]
+    ma50 = df["Close"].ewm(span=50, adjust=False).mean().iloc[-1]
+    ma200 = df["Close"].ewm(span=200, adjust=False).mean().iloc[-1]
     name = get_company_name(symbol)
 
     emoji = "🟡" if cross_type == "golden" else "⚫"

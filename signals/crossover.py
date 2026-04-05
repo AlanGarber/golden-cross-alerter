@@ -6,14 +6,14 @@ def detect_crossover(df: pd.DataFrame) -> str | None:
     Retorna: 'golden', 'death', o None si no hubo cruce hoy.
     """
     df = df.copy()
-    df["ma50"] = df["Close"].rolling(window=50).mean() #Media móvil de 50 días
-    df["ma200"] = df["Close"].rolling(window=200).mean() #Media móvil de 200 días
+    df["ma50"] = df["Close"].ewm(span=50, adjust=False).mean()
+    df["ma200"] = df["Close"].ewm(span=200, adjust=False).mean()
 
-    today = df.iloc[-1] #Ultima fila de dataframe (Hoy)
-    yesterday = df.iloc[-2] #Anteultima fila de dataframe (Ayer)
+    today = df.iloc[-1]
+    yesterday = df.iloc[-2]
 
-    golden = yesterday["ma50"] < yesterday["ma200"] and today["ma50"] > today["ma200"] #Cruce al alza
-    death = yesterday["ma50"] > yesterday["ma200"] and today["ma50"] < today["ma200"] #Cruce a la baja
+    golden = yesterday["ma50"] < yesterday["ma200"] and today["ma50"] > today["ma200"]
+    death = yesterday["ma50"] > yesterday["ma200"] and today["ma50"] < today["ma200"]
 
     if golden:
         return "golden"

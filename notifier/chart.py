@@ -4,8 +4,8 @@ from io import BytesIO
 
 def generate_chart(df, symbol: str, cross_type: str) -> BytesIO:
     df = df.copy().tail(300)
-    df["ma50"] = df["Close"].rolling(window=50).mean()
-    df["ma200"] = df["Close"].rolling(window=200).mean()
+    df["ma50"] = df["Close"].ewm(span=50, adjust=False).mean()
+    df["ma200"] = df["Close"].ewm(span=200, adjust=False).mean()
 
     fig, ax = plt.subplots(figsize=(10, 5))
     ax.plot(df.index, df["Close"], label="Precio", color="#aaaaaa", linewidth=1)
