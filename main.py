@@ -3,7 +3,8 @@ load_dotenv()
 
 from fetcher.market_data import get_historical_data, get_sp500_symbols
 from signals.crossover import detect_crossover
-from notifier.telegram_bot import notify
+from notifier.telegram_bot import notify_with_chart
+from notifier.chart import generate_chart
 import yfinance as yf
 
 EXTRA_SYMBOLS = ["BTC-USD", "ETH-USD", "SOL-USD", "SPY", "QQQ", "GLD"]
@@ -14,7 +15,7 @@ def get_company_name(symbol: str) -> str:
     except:
         return symbol
 
-def build_message(symbol: str, cross_type: str, df) -> str:
+def build_caption(symbol: str, cross_type: str, df) -> str:
     price = df["Close"].iloc[-1]
     ma50 = df["Close"].rolling(window=50).mean().iloc[-1]
     ma200 = df["Close"].rolling(window=200).mean().iloc[-1]
@@ -43,9 +44,10 @@ def run():
             result = detect_crossover(df)
 
             if result in ("golden", "death"):
-                msg = build_message(symbol, result, df)
-                print(msg)
-                notify(msg)
+                caption = build_caption(symbol, result, df)
+                chart = generate_chart(df, symbol, result)
+                print(caption)
+                notify_with_chart(chart, caption)
             else:
                 print(f"➖ Sin cruce en {symbol}")
         except Exception as e:
