@@ -1,0 +1,28 @@
+name: Golden Cross Alerter
+
+on:
+  schedule:
+    - cron: "0 22 * * 1-5" # 18:00 EST = 22:00 UTC, lunes a viernes
+  workflow_dispatch: # permite correrlo manualmente
+
+jobs:
+  run-alerter:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run alerter
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python -c "from main import run; run()"
