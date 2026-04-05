@@ -1,28 +1,32 @@
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
+import mplfinance as mpf
 from io import BytesIO
 
 def generate_chart(df, symbol: str, cross_type: str) -> BytesIO:
-    df = df.copy().tail(300)
+    df = df.copy()
     df["ma50"] = df["Close"].ewm(span=50, adjust=False).mean()
     df["ma200"] = df["Close"].ewm(span=200, adjust=False).mean()
+    df_plot = df.tail(300).copy()
 
-    fig, ax = plt.subplots(figsize=(10, 5))
-    ax.plot(df.index, df["Close"], label="Precio", color="#aaaaaa", linewidth=1)
-    ax.plot(df.index, df["ma50"], label="MA50", color="#f0a500", linewidth=1.5)
-    ax.plot(df.index, df["ma200"], label="MA200", color="#3a86ff", linewidth=1.5)
+    # mplfinance requiere columnas OHLCV con index datetime sin timezone
+    df_plot.index = df_plot.index.tz_localize(None)
 
-    color = "#f0a500" if cross_type == "golden" else "#ff4444"
-    title = f"{'🟡 Golden Cross' if cross_type == 'golden' else '⚫ Death Cross'} — {symbol}"
-    ax.set_title(title, fontsize=13, color=color)
-    ax.legend()
-    ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %Y"))
-    ax.xaxis.set_major_locator(mdates.MonthLocator(interval=3))
-    plt.xticks(rotation=45)
-    plt.tight_layout()
+    apds = [
+        mpf.make_addplot(df_plot["ma50"], color="#f0a500", width=1.5, label="EMA50"),
+        mpf.make_addplot(df_plot["ma200"], color="#3a86ff", width=1.5, label="EMA200"),
+    ]
+
+    title = f"{'Golden Cross' if cross_type == 'golden' else 'Death Cross'} — {symbol}"
 
     buf = BytesIO()
-    plt.savefig(buf, format="png", dpi=150)
-    plt.close()
+    mpf.plot(
+        df_plot,
+        type="candle",
+        style="charles",
+        title=title,
+        addplot=apds,
+        volume=False,
+        figsize=(12, 6),
+        savefig=dict(fname=buf, format="png", dpi=150),
+    )
     buf.seek(0)
     return buf
