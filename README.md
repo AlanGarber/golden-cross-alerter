@@ -1,16 +1,19 @@
-# Golden Cross Alerter
+# 📈 Golden Cross Alerter
 
-Detecta Golden Cross y Death Cross en acciones/crypto y envía alertas por Telegram.
+Detecta **Golden Cross** y **Death Cross** en 500+ activos y envía alertas por Telegram automáticamente cada día hábil.
 
-## Stack
-- Python 3.11+
-- yfinance
-- pandas-ta
-- python-telegram-bot
+## ¿Cómo funciona?
 
-## Módulos
-- \`signals/\` — Detección de cruces
-- \`fetcher/\` — Datos de mercado
-- \`notifier/\` — Alertas Telegram
-- \`scheduler/\` — Automatización
-- \`db/\` — Watchlist de activos
+1. Corre todos los días a las 18:00 EST via GitHub Actions
+2. Descarga datos históricos con `yfinance`
+3. Calcula MA50 y MA200
+4. Si detecta un cruce, manda alerta por Telegram
+
+## Ejemplo de alerta
+🟡 GOLDEN CROSS — AAPL
+🏢 Apple Inc.
+💵 Precio: $189.42
+📊 MA50:  $182.10
+📊 MA200: $179.65
+⚡ Señal de tendencia alcista 📈
+
