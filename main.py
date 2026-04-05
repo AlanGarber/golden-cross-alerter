@@ -3,6 +3,7 @@ load_dotenv()
 
 from fetcher.market_data import get_historical_data, get_sp500_symbols
 from signals.crossover import detect_crossover
+from signals.score import calculate_score
 from notifier.telegram_bot import notify_with_chart
 from notifier.chart import generate_chart
 from db.sent_alerts import already_sent, mark_as_sent
@@ -18,9 +19,10 @@ def get_company_name(symbol: str) -> str:
 
 def build_caption(symbol: str, cross_type: str, df) -> str:
     price = df["Close"].iloc[-1]
-    ma50 = df["Close"].ewm(span=50, adjust=False).mean().iloc[-1]
-    ma200 = df["Close"].ewm(span=200, adjust=False).mean().iloc[-1]
+    ema50 = df["Close"].ewm(span=50, adjust=False).mean().iloc[-1]
+    ema200 = df["Close"].ewm(span=200, adjust=False).mean().iloc[-1]
     name = get_company_name(symbol)
+    score, label = calculate_score(df, cross_type)
 
     emoji = "🟡" if cross_type == "golden" else "⚫"
     title = "GOLDEN CROSS" if cross_type == "golden" else "DEATH CROSS"
@@ -30,9 +32,10 @@ def build_caption(symbol: str, cross_type: str, df) -> str:
         f"{emoji} <b>{title} — {symbol}</b>\n"
         f"🏢 {name}\n\n"
         f"💵 Precio: <b>${price:.2f}</b>\n"
-        f"📊 MA50:  <b>${ma50:.2f}</b>\n"
-        f"📊 MA200: <b>${ma200:.2f}</b>\n\n"
-        f"⚡ Señal de tendencia {trend}"
+        f"📊 EMA50:  <b>${ema50:.2f}</b>\n"
+        f"📊 EMA200: <b>${ema200:.2f}</b>\n\n"
+        f"⚡ Señal de tendencia {trend}\n\n"
+        f"🎯 Score de confianza: <b>{score}/100</b> — {label}"
     )
 
 def run():
