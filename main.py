@@ -4,6 +4,7 @@ load_dotenv()
 from fetcher.market_data import get_historical_data, get_sp500_symbols
 from signals.crossover import detect_crossover
 from signals.score import calculate_score
+from signals.backtest import get_historical_performance
 from notifier.telegram_bot import notify_with_chart
 from notifier.chart import generate_chart
 from db.sent_alerts import already_sent, mark_as_sent
@@ -23,20 +24,34 @@ def build_caption(symbol: str, cross_type: str, df) -> str:
     ema200 = df["Close"].ewm(span=200, adjust=False).mean().iloc[-1]
     name = get_company_name(symbol)
     score, label = calculate_score(df, cross_type)
+    perf = get_historical_performance(df, cross_type)
 
     emoji = "🟡" if cross_type == "golden" else "⚫"
     title = "GOLDEN CROSS" if cross_type == "golden" else "DEATH CROSS"
     trend = "alcista 📈" if cross_type == "golden" else "bajista 📉"
 
-    return (
+    caption = (
         f"{emoji} <b>{title} — {symbol}</b>\n"
         f"🏢 {name}\n\n"
         f"💵 Precio: <b>${price:.2f}</b>\n"
         f"📊 EMA50:  <b>${ema50:.2f}</b>\n"
         f"📊 EMA200: <b>${ema200:.2f}</b>\n\n"
         f"⚡ Señal de tendencia {trend}\n\n"
-        f"🎯 Score de confianza: <b>{score}/100</b> — {label}"
+        f"🎯 Score de confianza: <b>{score}/100</b> — {label}\n\n"
     )
+
+    if perf:
+        caption += (
+            f"📜 <b>Historial ({perf['total']} señales previas)</b>\n"
+            f"✅ Win rate: <b>{perf['win_rate']:.1f}%</b>\n"
+            f"📈 Retorno promedio 30d: <b>{perf['avg_return']:+.1f}%</b>\n"
+            f"🏆 Mejor caso: <b>{perf['best']:+.1f}%</b>\n"
+            f"💀 Peor caso: <b>{perf['worst']:+.1f}%</b>"
+        )
+    else:
+        caption += "📜 Sin historial previo para este símbolo"
+
+    return caption
 
 def run():
     symbols = get_sp500_symbols() + EXTRA_SYMBOLS
