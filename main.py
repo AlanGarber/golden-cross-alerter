@@ -25,4 +25,5 @@ def run():
             print(f"➖ Sin cruce en {symbol}")
 
 if __name__ == "__main__":
-    run()
+    from scheduler.jobs import start
+    start()
