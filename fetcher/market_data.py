@@ -15,6 +15,9 @@ def get_historical_data(symbol: str, period: str = "2y") -> pd.DataFrame:
     return df
 
 def get_sp500_symbols() -> list[str]:
-    table = pd.read_html("https://en.wikipedia.org/wiki/List_of_S%26P_500_companies")
-    df = table[0]
+    import requests
+    headers = {"User-Agent": "Mozilla/5.0"}
+    url = "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
+    response = requests.get(url, headers=headers)
+    df = pd.read_html(response.text)[0]
     return df["Symbol"].tolist()
