@@ -7,7 +7,7 @@ TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
 async def send_message(text: str):
     bot = Bot(token=TELEGRAM_BOT_TOKEN)
-    await bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=text)
+    await bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=text, parse_mode="HTML")
 
 def notify(text: str):
     asyncio.run(send_message(text))
