@@ -5,6 +5,7 @@ from fetcher.market_data import get_historical_data, get_sp500_symbols
 from signals.crossover import detect_crossover
 from notifier.telegram_bot import notify_with_chart
 from notifier.chart import generate_chart
+from db.sent_alerts import already_sent, mark_as_sent
 import yfinance as yf
 
 EXTRA_SYMBOLS = ["BTC-USD", "ETH-USD", "SOL-USD", "SPY", "QQQ", "GLD"]
@@ -44,10 +45,14 @@ def run():
             result = detect_crossover(df)
 
             if result in ("golden", "death"):
+                if already_sent(symbol, result):
+                    print(f"⏭️ Ya enviado hoy: {symbol} {result}")
+                    continue
                 caption = build_caption(symbol, result, df)
                 chart = generate_chart(df, symbol, result)
                 print(caption)
                 notify_with_chart(chart, caption)
+                mark_as_sent(symbol, result)
             else:
                 print(f"➖ Sin cruce en {symbol}")
         except Exception as e:
