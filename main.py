@@ -41,9 +41,13 @@ def build_caption(symbol: str, cross_type: str, df) -> str:
     )
 
     if perf:
+        tipo = "Golden Cross" if cross_type == "golden" else "Death Cross"
+        direccion = "subió" if cross_type == "golden" else "bajó"
         caption += (
-            f"📜 <b>Historial ({perf['total']} señales previas)</b>\n"
-            f"✅ Win rate: <b>{perf['win_rate']:.1f}%</b>\n"
+            f"📜 <b>Historial de {tipo} en {symbol}</b>\n"
+            f"🔢 Señales previas: <b>{perf['total']}</b>\n"
+            f"✅ Win rate: <b>{perf['win_rate']:.1f}%</b> "
+            f"(veces que {direccion} en 30d)\n"
             f"📈 Retorno promedio 30d: <b>{perf['avg_return']:+.1f}%</b>\n"
             f"🏆 Mejor caso: <b>{perf['best']:+.1f}%</b>\n"
             f"💀 Peor caso: <b>{perf['worst']:+.1f}%</b>"
