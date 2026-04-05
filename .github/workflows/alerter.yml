@@ -2,8 +2,8 @@ name: Golden Cross Alerter
 
 on:
   schedule:
-    - cron: "0 22 * * 1-5" # 18:00 EST = 22:00 UTC, lunes a viernes
-  workflow_dispatch: # permite correrlo manualmente
+    - cron: "0 22 * * 1-5"
+  workflow_dispatch:
 
 jobs:
   run-alerter:
@@ -21,16 +21,16 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Debug secrets
-        env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: |
-          echo "Token length: ${#TELEGRAM_BOT_TOKEN}"
-          echo "Chat ID: $TELEGRAM_CHAT_ID"
-
       - name: Run alerter
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python -c "from main import run; run()"
+
+      - name: Save alerts cache
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add db/alerts.json || true
+          git diff --staged --quiet || git commit -m "chore: update alerts cache"
+          git push || true
