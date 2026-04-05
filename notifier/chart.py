@@ -11,6 +11,7 @@ def generate_chart(df, symbol: str, cross_type: str) -> BytesIO:
     df_plot.index = df_plot.index.tz_localize(None)
 
     # Detectar cruces históricos (menos el último)
+    # Detectar todos los cruces históricos (menos el último)
     cross_dates = []
     for i in range(1, len(df_plot) - 1):
         yesterday = df_plot.iloc[i - 1]
@@ -19,7 +20,7 @@ def generate_chart(df, symbol: str, cross_type: str) -> BytesIO:
         golden = yesterday["ma50"] < yesterday["ma200"] and today["ma50"] > today["ma200"]
         death = yesterday["ma50"] > yesterday["ma200"] and today["ma50"] < today["ma200"]
 
-        if (cross_type == "golden" and golden) or (cross_type == "death" and death):
+        if golden or death:
             cross_dates.append(i)
 
     apds = [
