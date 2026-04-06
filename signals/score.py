@@ -31,7 +31,7 @@ def calculate_score(df: pd.DataFrame, cross_type: str) -> tuple[int, str]:
 
     total = rsi_score + vol_score + gap_score
 
-   if total >= 80:
+    if total >= 80:
         label = "🔥 Very strong"
     elif total >= 60:
         label = "✅ Moderate"

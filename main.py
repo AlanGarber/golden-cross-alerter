@@ -37,7 +37,8 @@ def build_caption(symbol: str, cross_type: str, df) -> str:
         f"📊 EMA50:  <b>${ema50:.2f}</b>\n"
         f"📊 EMA200: <b>${ema200:.2f}</b>\n\n"
         f"⚡ Trend signal: {trend}\n\n"
-        f"🎯 Confidence score: <b>{score}/100</b> — {label}\n\n"
+        f"🎯 Confidence score: <b>{score}/100</b> — {label}\n"
+        f"<i>RSI momentum + volume vs avg + EMA gap</i>\n\n"
     )
 
     if perf:
