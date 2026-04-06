@@ -28,34 +28,34 @@ def build_caption(symbol: str, cross_type: str, df) -> str:
 
     emoji = "🟡" if cross_type == "golden" else "⚫"
     title = "GOLDEN CROSS" if cross_type == "golden" else "DEATH CROSS"
-    trend = "alcista 📈" if cross_type == "golden" else "bajista 📉"
+    trend = "bullish 📈" if cross_type == "golden" else "bearish 📉"
 
     caption = (
         f"{emoji} <b>{title} — {symbol}</b>\n"
         f"🏢 {name}\n\n"
-        f"💵 Precio: <b>${price:.2f}</b>\n"
+        f"💵 Price: <b>${price:.2f}</b>\n"
         f"📊 EMA50:  <b>${ema50:.2f}</b>\n"
         f"📊 EMA200: <b>${ema200:.2f}</b>\n\n"
-        f"⚡ Señal de tendencia {trend}\n\n"
-        f"🎯 Score de confianza: <b>{score}/100</b> — {label}\n\n"
+        f"⚡ Trend signal: {trend}\n\n"
+        f"🎯 Confidence score: <b>{score}/100</b> — {label}\n\n"
     )
 
     if perf:
         if cross_type == "golden":
             caption += (
-                f"📜 <b>Historial de Golden Cross en {symbol}</b>\n"
-                f"🔢 Señales previas: <b>{perf['total']}</b>\n"
-                f"📈 En promedio, subió <b>{perf['avg_return']:+.1f}%</b> en los 30 días siguientes"
+                f"📜 <b>Golden Cross history for {symbol}</b>\n"
+                f"🔢 Previous signals: <b>{perf['total']}</b>\n"
+                f"📈 Avg return 30d after signal: <b>{perf['avg_return']:+.1f}%</b>"
             )
         else:
             caption += (
-                f"📜 <b>Historial de Death Cross en {symbol}</b>\n"
-                f"🔢 Señales previas: <b>{perf['total']}</b>\n"
-                f"📉 En promedio, cayó <b>{abs(perf['avg_return']):.1f}%</b> en los 30 días siguientes"
+                f"📜 <b>Death Cross history for {symbol}</b>\n"
+                f"🔢 Previous signals: <b>{perf['total']}</b>\n"
+                f"📉 Avg drop 30d after signal: <b>{abs(perf['avg_return']):.1f}%</b>"
             )
     else:
-        caption += "📜 Sin historial previo para este símbolo"
-        
+        caption += "📜 No previous signals found for this symbol"
+
     return caption
 
 def run():
