@@ -38,6 +38,7 @@ def generate_chart(df, symbol: str, cross_type: str) -> BytesIO:
         title=title,
         addplot=apds,
         figsize=(14, 6),
+        warn_too_much_data=10000,
         returnfig=True,
     )
 
